@@ -56,9 +56,6 @@ public class User {
     @OneToMany(mappedBy="owner",fetch=FetchType.LAZY)
 	private List<Pet> petsInAdoption;
 
-    @ManyToOne(fetch=FetchType.LAZY)
-    
-
     @Column(updatable=false)
 	@DateTimeFormat(pattern="yyyy-MM-dd")
 	private Date createdAt;
