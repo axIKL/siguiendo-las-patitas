@@ -2,11 +2,11 @@ package com.siguiendolaspatitas.services;
 
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.security.SecurityProperties.User;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 
 import com.siguiendolaspatitas.repositories.UserRepository;
+import com.siguiendolaspatitas.models.User;
 
 @Service
 public class SessionService {
@@ -14,42 +14,55 @@ public class SessionService {
     @Autowired
     private UserRepository uR;
 
-    public User register(User NewUser, BindingResult result) {
-        
-        String passsword = NewUser.getPassword();
-        String confirm = NewUser.getConfirm();
-
-        if(!passsword.equals(confirm)){
-            result.rejectValue("confirm", "Matches", "The password must match the confirm password.");
-        }
-
-        String email = NewUser.getEmail();
-        User userExist = uR.findByEmail(email);
-
-        if(userExist != null){
-            result.rejectValue("email", "Matches", "The email already exists.");
-        }
-
-        if(result.hasErrors()){
-            return null;
-        }else {
-        String passHash = BCrypt.hashpw(passsword, BCrypt.gensalt());
-        NewUser.setPassword(passHash);
-        return uR.save(NewUser);
-        }
-
-    }
-    public User login(String email, String password) {
-        User userTryingLogin = uR.findByEmail(email);
-
-        if (User  userTryingLogin == null){
-            return null;
-    }
-
-    if(BCrypt.checkpw(password, userTryingLogin.getPassword())){
-        return userTryingLogin;
-    }else {
-        return null;
-    }
-    }
+    public User register(User newUser, BindingResult result) {
+		
+		//Comparar las contraseñas
+		String password = newUser.getPassword();
+		String confirm = newUser.getConfirm();
+		if(!password.equals(confirm)) {
+			//SI no son iguales
+			//path, clave, mensaje
+			result.rejectValue("confirm", "Matches", "Password and confirmation don't match");
+		}
+		
+		//Revisar que el email no esté registrado
+		String email = newUser.getEmail();
+		User userExist = uR.findByEmail(email); //Objeto de User o null
+		if(userExist != null) {
+			//El correo ya está registrado
+			result.rejectValue("email", "Unique", "E-mail already exists");
+		}
+		
+		//Si existe error, regreso null
+		if(result.hasErrors()) {
+			return null;
+		} else {
+			//NO HAY ERRORES
+			//Hashear contraseña
+			String passHash = BCrypt.hashpw(password, BCrypt.gensalt());
+			newUser.setPassword(passHash); //Establecemos el password hasheado
+			return uR.save(newUser);
+		}
+		
+	}
+	
+	/*Método que revisa que los datos sean correctos para Iniciar Sesión*/
+	public User login(String email, String password) {
+		//Revisamos que el correo exista en BD
+		User userTryingLogin = uR.findByEmail(email); //Objeto User o NULL
+		
+		if(userTryingLogin == null) {
+			return null;
+		}
+		
+		//Comparar las contraseñas
+		//BCrypt.checkpw(Contra NO encriptada, Contra SI encriptada) -> True o False
+		if(BCrypt.checkpw(password, userTryingLogin.getPassword())) {
+			return userTryingLogin;
+		} else {
+			return null;
+		}
+		
+		
+	}
 }

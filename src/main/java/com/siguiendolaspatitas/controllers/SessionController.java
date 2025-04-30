@@ -18,8 +18,10 @@ import jakarta.validation.Valid;
 
 @Controller
 public class SessionController {
+    
     @Autowired
     private SessionService serv;
+    
     @GetMapping("/")
     public String index(@ModelAttribute("NewUser") User NewUser) {
         return "LoginRegister.jsp";
@@ -38,6 +40,7 @@ public class SessionController {
     }
     @PostMapping("/login")
     public String login(@RequestParam("email") String email, @RequestParam("password") String password, RedirectAttributes redirectAttributes, HttpSession session) {
+        
         User userTryingLogin = serv.login(email, password);
         
         if (userTryingLogin == null) {
