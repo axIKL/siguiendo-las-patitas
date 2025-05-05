@@ -29,7 +29,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String profilePicture;
+    
 
     @NotNull(message="Se requiere un nombre")
 	@Size(max=40, message="el nombre ingresado demasiado largo")
@@ -130,14 +130,6 @@ public class User {
 		this.updatedAt = updatedAt;
 	}
 
-	public String getProfilePicture() {
-		return profilePicture;
-	}
-
-	public void setProfilePicture(String profilePicture) {
-		this.profilePicture = profilePicture;
-    }
-
     public List<Pet> getPets() {
         return petsInAdoption;
     }
@@ -154,7 +146,7 @@ public class User {
     }
     @Override
     public String toString() {
-        return "User [id=" + id + ", profilePicture=" + profilePicture + ", name=" + name + ", lastName=" + lastName + ", email=" + email + ", password="
+        return "User [id=" + id + ", name=" + name + ", lastName=" + lastName + ", email=" + email + ", password="
                 + password + ", confirm=" + confirm + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + "]";
             }
 }
